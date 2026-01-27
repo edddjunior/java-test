@@ -1,9 +1,12 @@
-package com.inventory.product;
+package com.inventory.product.infrastructure.web;
 
+import com.inventory.product.domain.model.Product;
+import com.inventory.product.domain.repository.ProductRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,19 +33,27 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
+    public ResponseEntity<Product> create(@RequestBody CreateProductRequest request) {
+        Product product = Product.create(
+                request.name(),
+                request.description(),
+                request.price(),
+                request.stockQuantity()
+        );
         Product saved = productRepository.save(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable UUID id, @RequestBody Product product) {
+    public ResponseEntity<Product> update(@PathVariable UUID id, @RequestBody UpdateProductRequest request) {
         return productRepository.findById(id)
                 .map(existing -> {
-                    existing.setName(product.getName());
-                    existing.setDescription(product.getDescription());
-                    existing.setPrice(product.getPrice());
-                    existing.setStockQuantity(product.getStockQuantity());
+                    existing.update(
+                            request.name(),
+                            request.description(),
+                            request.price(),
+                            request.stockQuantity()
+                    );
                     return ResponseEntity.ok(productRepository.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -56,4 +67,7 @@ public class ProductController {
         productRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    record CreateProductRequest(String name, String description, BigDecimal price, Integer stockQuantity) {}
+    record UpdateProductRequest(String name, String description, BigDecimal price, Integer stockQuantity) {}
 }

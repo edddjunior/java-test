@@ -1,4 +1,4 @@
-package com.inventory.product;
+package com.inventory.product.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "products")
-public class Product {
+public class ProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,9 +23,10 @@ public class Product {
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
-    public Product() {}
+    public ProductEntity() {}
 
-    public Product(String name, String description, BigDecimal price, Integer stockQuantity) {
+    public ProductEntity(UUID id, String name, String description, BigDecimal price, Integer stockQuantity) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
@@ -34,16 +35,12 @@ public class Product {
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
-
     public Integer getStockQuantity() { return stockQuantity; }
     public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
 }
