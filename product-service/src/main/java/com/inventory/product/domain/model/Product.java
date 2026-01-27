@@ -14,9 +14,10 @@ public class Product {
     private boolean active;
     private Instant createdAt;
     private Instant updatedAt;
+    private Long version;
 
     public Product(UUID id, String name, String description, BigDecimal price,
-                   Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt) {
+                   Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt, Long version) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -25,6 +26,7 @@ public class Product {
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.version = version;
     }
 
     public static Product create(String name, String description, BigDecimal price, Integer stockQuantity) {
@@ -32,7 +34,7 @@ public class Product {
         validatePrice(price);
         validateStockQuantity(stockQuantity);
         Instant now = Instant.now();
-        return new Product(null, name.trim(), description, price, stockQuantity, true, now, now);
+        return new Product(null, name.trim(), description, price, stockQuantity, true, now, now, null);
     }
 
     public void update(String name, String description, BigDecimal price, Integer stockQuantity) {
@@ -86,4 +88,5 @@ public class Product {
     public boolean isActive() { return active; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public Long getVersion() { return version; }
 }

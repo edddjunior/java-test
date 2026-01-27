@@ -33,10 +33,13 @@ public class ProductEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @Version
+    private Long version;
+
     public ProductEntity() {}
 
     public ProductEntity(UUID id, String name, String description, BigDecimal price,
-                         Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt) {
+                         Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt, Long version) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -45,6 +48,7 @@ public class ProductEntity {
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.version = version;
     }
 
     public UUID getId() { return id; }
@@ -63,4 +67,6 @@ public class ProductEntity {
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 }

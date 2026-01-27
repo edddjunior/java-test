@@ -79,7 +79,8 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 product.getStockQuantity(),
                 product.isActive(),
                 product.getCreatedAt(),
-                product.getUpdatedAt()
+                product.getUpdatedAt(),
+                product.getVersion()
         );
     }
 
@@ -92,7 +93,8 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 entity.getStockQuantity(),
                 entity.isActive(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getVersion()
         );
     }
 }
