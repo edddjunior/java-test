@@ -10,6 +10,9 @@ public enum ErrorCode {
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "Argumento inválido"),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "Tipo incompatível"),
 
+    // 429 - Too Many Requests
+    RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "Limite de requisições excedido"),
+
     // 5xx - Server Errors
     PRODUCT_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "Serviço de produtos indisponível"),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "Serviço temporariamente indisponível"),

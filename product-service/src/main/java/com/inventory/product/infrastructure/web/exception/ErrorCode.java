@@ -13,6 +13,9 @@ public enum ErrorCode {
     // 409 - Conflict
     CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "Modificação concorrente"),
 
+    // 429 - Too Many Requests
+    RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "Limite de requisições excedido"),
+
     // 5xx - Server Errors
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor");
 

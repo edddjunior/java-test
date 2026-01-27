@@ -5,6 +5,7 @@ import com.inventory.stock.domain.exception.ServiceUnavailableException;
 import com.inventory.stock.infrastructure.web.response.ApiErrorResponse;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handle(CallNotPermittedException ex, HttpServletRequest req) {
         log.warn("Circuit breaker aberto: {}", ex.getMessage());
         return response(ErrorCode.SERVICE_UNAVAILABLE, "Serviço temporariamente indisponível. Tente novamente.", req);
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<ApiErrorResponse> handle(RequestNotPermitted ex, HttpServletRequest req) {
+        log.warn("Rate limit excedido: {}", ex.getMessage());
+        return response(ErrorCode.RATE_LIMIT_EXCEEDED, "Limite de requisições excedido. Tente novamente em instantes.", req);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

@@ -6,6 +6,7 @@ import com.inventory.product.application.usecase.*;
 import com.inventory.product.infrastructure.web.request.CreateProductRequest;
 import com.inventory.product.infrastructure.web.request.UpdateProductRequest;
 import com.inventory.product.infrastructure.web.response.ApiResponse;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/products")
 @Tag(name = "Products", description = "Gerenciamento de produtos")
+@RateLimiter(name = "productApi")
 public class ProductController {
 
     private final CreateProductUseCase createProductUseCase;

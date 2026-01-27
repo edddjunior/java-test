@@ -29,6 +29,12 @@ resilience4j:
         failure-rate-threshold: 50
         wait-duration-in-open-state: 10s
         permitted-number-of-calls-in-half-open-state: 3
+  ratelimiter:
+    instances:
+      stockApi:
+        limit-for-period: 100
+        limit-refresh-period: 1s
+        timeout-duration: 500ms
 
 management:
   endpoints:

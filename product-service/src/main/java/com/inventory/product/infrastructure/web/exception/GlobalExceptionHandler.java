@@ -2,6 +2,7 @@ package com.inventory.product.infrastructure.web.exception;
 
 import com.inventory.product.domain.exception.ProductNotFoundException;
 import com.inventory.product.infrastructure.web.response.ApiErrorResponse;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handle(ObjectOptimisticLockingFailureException ex, HttpServletRequest req) {
         log.warn("Conflito de concorrência: {}", ex.getMessage());
         return response(ErrorCode.CONCURRENT_MODIFICATION, "Recurso foi modificado por outro usuário", req);
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<ApiErrorResponse> handle(RequestNotPermitted ex, HttpServletRequest req) {
+        log.warn("Rate limit excedido: {}", ex.getMessage());
+        return response(ErrorCode.RATE_LIMIT_EXCEEDED, "Limite de requisições excedido. Tente novamente em instantes.", req);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

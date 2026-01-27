@@ -50,6 +50,14 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+resilience4j:
+  ratelimiter:
+    instances:
+      productApi:
+        limit-for-period: 100
+        limit-refresh-period: 1s
+        timeout-duration: 500ms
+
 logging:
   level:
     com.inventory.product: INFO
