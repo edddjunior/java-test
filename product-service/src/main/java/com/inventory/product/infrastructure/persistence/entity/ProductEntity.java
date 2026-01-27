@@ -23,14 +23,18 @@ public class ProductEntity {
     @Column(name = "stock_quantity", nullable = false)
     private Integer stockQuantity;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     public ProductEntity() {}
 
-    public ProductEntity(UUID id, String name, String description, BigDecimal price, Integer stockQuantity) {
+    public ProductEntity(UUID id, String name, String description, BigDecimal price, Integer stockQuantity, boolean active) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.active = active;
     }
 
     public UUID getId() { return id; }
@@ -43,4 +47,6 @@ public class ProductEntity {
     public void setPrice(BigDecimal price) { this.price = price; }
     public Integer getStockQuantity() { return stockQuantity; }
     public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

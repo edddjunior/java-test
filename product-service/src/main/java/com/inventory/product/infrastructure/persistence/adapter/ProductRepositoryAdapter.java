@@ -28,22 +28,25 @@ public class ProductRepositoryAdapter implements ProductRepository {
 
     @Override
     public Optional<Product> findById(UUID id) {
-        return jpaRepository.findById(id).map(this::toDomain);
+        return jpaRepository.findByIdAndActiveTrue(id).map(this::toDomain);
     }
 
     @Override
     public List<Product> findAll() {
-        return jpaRepository.findAll().stream().map(this::toDomain).toList();
+        return jpaRepository.findAllByActiveTrue().stream().map(this::toDomain).toList();
     }
 
     @Override
     public void deleteById(UUID id) {
-        jpaRepository.deleteById(id);
+        jpaRepository.findById(id).ifPresent(entity -> {
+            entity.setActive(false);
+            jpaRepository.save(entity);
+        });
     }
 
     @Override
     public boolean existsById(UUID id) {
-        return jpaRepository.existsById(id);
+        return jpaRepository.existsByIdAndActiveTrue(id);
     }
 
     private ProductEntity toEntity(Product product) {
@@ -52,7 +55,8 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getStockQuantity()
+                product.getStockQuantity(),
+                product.isActive()
         );
     }
 
@@ -62,7 +66,8 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getPrice(),
-                entity.getStockQuantity()
+                entity.getStockQuantity(),
+                entity.isActive()
         );
     }
 }
