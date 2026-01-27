@@ -1,6 +1,7 @@
 package com.inventory.product.infrastructure.web;
 
 import com.inventory.product.application.usecase.*;
+import com.inventory.product.domain.model.PageResult;
 import com.inventory.product.domain.model.Product;
 import com.inventory.product.infrastructure.web.response.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,8 +36,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public ApiResponse<List<Product>> findAll() {
-        return ApiResponse.of(listProductsUseCase.execute());
+    public ApiResponse<PageResult<Product>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return ApiResponse.of(listProductsUseCase.execute(page, size));
     }
 
     @GetMapping("/{id}")

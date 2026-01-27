@@ -1,9 +1,13 @@
 package com.inventory.product.infrastructure.persistence.adapter;
 
+import com.inventory.product.domain.model.PageResult;
 import com.inventory.product.domain.model.Product;
 import com.inventory.product.domain.repository.ProductRepository;
 import com.inventory.product.infrastructure.persistence.entity.ProductEntity;
 import com.inventory.product.infrastructure.persistence.repository.JpaProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -34,6 +38,22 @@ public class ProductRepositoryAdapter implements ProductRepository {
     @Override
     public List<Product> findAll() {
         return jpaRepository.findAllByActiveTrue().stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public PageResult<Product> findAll(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<ProductEntity> entityPage = jpaRepository.findAllByActiveTrue(pageRequest);
+
+        List<Product> products = entityPage.getContent().stream().map(this::toDomain).toList();
+
+        return new PageResult<>(
+                products,
+                entityPage.getNumber(),
+                entityPage.getSize(),
+                entityPage.getTotalElements(),
+                entityPage.getTotalPages()
+        );
     }
 
     @Override
