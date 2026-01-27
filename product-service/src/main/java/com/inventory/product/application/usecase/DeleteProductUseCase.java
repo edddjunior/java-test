@@ -1,5 +1,6 @@
 package com.inventory.product.application.usecase;
 
+import com.inventory.product.domain.exception.ProductNotFoundException;
 import com.inventory.product.domain.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,10 @@ public class DeleteProductUseCase {
         this.productRepository = productRepository;
     }
 
-    public boolean execute(UUID id) {
+    public void execute(UUID id) {
         if (!productRepository.existsById(id)) {
-            return false;
+            throw new ProductNotFoundException(id);
         }
         productRepository.deleteById(id);
-        return true;
     }
 }

@@ -40,40 +40,36 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> findById(@PathVariable UUID id) {
-        return getProductUseCase.execute(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Product findById(@PathVariable UUID id) {
+        return getProductUseCase.execute(id);
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody CreateProductRequest request) {
-        Product saved = createProductUseCase.execute(
+    @ResponseStatus(HttpStatus.CREATED)
+    public Product create(@RequestBody CreateProductRequest request) {
+        return createProductUseCase.execute(
                 request.name(),
                 request.description(),
                 request.price(),
                 request.stockQuantity()
         );
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable UUID id, @RequestBody UpdateProductRequest request) {
+    public Product update(@PathVariable UUID id, @RequestBody UpdateProductRequest request) {
         return updateProductUseCase.execute(
                 id,
                 request.name(),
                 request.description(),
                 request.price(),
                 request.stockQuantity()
-        ).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        if (deleteProductUseCase.execute(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        deleteProductUseCase.execute(id);
     }
 
     record CreateProductRequest(String name, String description, BigDecimal price, Integer stockQuantity) {}
