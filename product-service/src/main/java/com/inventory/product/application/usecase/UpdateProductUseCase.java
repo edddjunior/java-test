@@ -1,6 +1,7 @@
 package com.inventory.product.application.usecase;
 
 import com.inventory.product.application.dto.ProductDTO;
+import com.inventory.product.application.mapper.ProductMapper;
 import com.inventory.product.domain.exception.ProductNotFoundException;
 import com.inventory.product.domain.model.Product;
 import com.inventory.product.domain.repository.ProductRepository;
@@ -13,9 +14,11 @@ import java.util.UUID;
 public class UpdateProductUseCase {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public UpdateProductUseCase(ProductRepository productRepository) {
+    public UpdateProductUseCase(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     public ProductDTO execute(UUID id, String name, String description, BigDecimal price, Integer stockQuantity) {
@@ -24,6 +27,6 @@ public class UpdateProductUseCase {
 
         product.update(name, description, price, stockQuantity);
         Product saved = productRepository.save(product);
-        return ProductDTO.from(saved);
+        return productMapper.toDTO(saved);
     }
 }
