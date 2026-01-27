@@ -3,6 +3,7 @@ package com.inventory.product.application.dto;
 import com.inventory.product.domain.model.Product;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 public record ProductDTO(
@@ -10,7 +11,9 @@ public record ProductDTO(
         String name,
         String description,
         BigDecimal price,
-        Integer stockQuantity
+        Integer stockQuantity,
+        Instant createdAt,
+        Instant updatedAt
 ) {
     public static ProductDTO from(Product product) {
         return new ProductDTO(
@@ -18,7 +21,9 @@ public record ProductDTO(
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getStockQuantity()
+                product.getStockQuantity(),
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 }

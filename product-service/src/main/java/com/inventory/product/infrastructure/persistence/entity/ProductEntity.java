@@ -2,6 +2,7 @@ package com.inventory.product.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -26,15 +27,24 @@ public class ProductEntity {
     @Column(nullable = false)
     private boolean active = true;
 
+    @Column(name = "created_at", nullable = false)
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
     public ProductEntity() {}
 
-    public ProductEntity(UUID id, String name, String description, BigDecimal price, Integer stockQuantity, boolean active) {
+    public ProductEntity(UUID id, String name, String description, BigDecimal price,
+                         Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.active = active;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UUID getId() { return id; }
@@ -49,4 +59,8 @@ public class ProductEntity {
     public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
 }

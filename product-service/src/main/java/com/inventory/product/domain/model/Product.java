@@ -1,6 +1,7 @@
 package com.inventory.product.domain.model;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 public class Product {
@@ -11,21 +12,27 @@ public class Product {
     private BigDecimal price;
     private Integer stockQuantity;
     private boolean active;
+    private Instant createdAt;
+    private Instant updatedAt;
 
-    public Product(UUID id, String name, String description, BigDecimal price, Integer stockQuantity, boolean active) {
+    public Product(UUID id, String name, String description, BigDecimal price,
+                   Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.active = active;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public static Product create(String name, String description, BigDecimal price, Integer stockQuantity) {
         validateName(name);
         validatePrice(price);
         validateStockQuantity(stockQuantity);
-        return new Product(null, name.trim(), description, price, stockQuantity, true);
+        Instant now = Instant.now();
+        return new Product(null, name.trim(), description, price, stockQuantity, true, now, now);
     }
 
     public void update(String name, String description, BigDecimal price, Integer stockQuantity) {
@@ -36,10 +43,12 @@ public class Product {
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.updatedAt = Instant.now();
     }
 
     public void deactivate() {
         this.active = false;
+        this.updatedAt = Instant.now();
     }
 
     private static void validateName(String name) {
@@ -75,4 +84,6 @@ public class Product {
     public BigDecimal getPrice() { return price; }
     public Integer getStockQuantity() { return stockQuantity; }
     public boolean isActive() { return active; }
+    public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
 }

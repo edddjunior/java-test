@@ -42,7 +42,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
 
     @Override
     public PageResult<Product> findAll(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ProductEntity> entityPage = jpaRepository.findAllByActiveTrue(pageRequest);
 
         List<Product> products = entityPage.getContent().stream().map(this::toDomain).toList();
@@ -60,6 +60,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
     public void deleteById(UUID id) {
         jpaRepository.findById(id).ifPresent(entity -> {
             entity.setActive(false);
+            entity.setUpdatedAt(java.time.Instant.now());
             jpaRepository.save(entity);
         });
     }
@@ -76,7 +77,9 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 product.getDescription(),
                 product.getPrice(),
                 product.getStockQuantity(),
-                product.isActive()
+                product.isActive(),
+                product.getCreatedAt(),
+                product.getUpdatedAt()
         );
     }
 
@@ -87,7 +90,9 @@ public class ProductRepositoryAdapter implements ProductRepository {
                 entity.getDescription(),
                 entity.getPrice(),
                 entity.getStockQuantity(),
-                entity.isActive()
+                entity.isActive(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
         );
     }
 }
