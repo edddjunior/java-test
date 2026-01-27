@@ -1,0 +1,149 @@
+<div class="card">
+  <div class="page-header">
+    <h2>Produtos</h2>
+    <a routerLink="/products/new" class="btn btn-primary">+ Novo</a>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <div class="loading">
+      <div class="spinner"></div>
+    </div>
+  } @else if (products.length === 0) {
+    <div class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+      <p>Nenhum produto cadastrado</p>
+      <a routerLink="/products/new" class="btn btn-primary mt-20">Cadastrar primeiro produto</a>
+    </div>
+  } @else {
+    <!-- Mobile: Cards -->
+    <div class="product-cards">
+      @for (product of products; track product.id) {
+        <div class="product-card">
+          <div class="product-card-main">
+            <div class="product-info">
+              <span class="product-name">{{ product.name }}</span>
+              <span class="product-desc">{{ product.description || 'Sem descrição' }}</span>
+              <span class="product-price">{{ product.price | currency:'BRL' }}</span>
+            </div>
+            <div class="product-stock">
+              <div class="stock-control-vertical">
+                <button 
+                  class="btn-stock" 
+                  (click)="updateStock(product, 1)"
+                  [disabled]="updatingStock === product.id"
+                  type="button">+</button>
+                <span 
+                  class="stock-badge" 
+                  [class.danger]="product.stockQuantity < 10"
+                  [class.warning]="product.stockQuantity >= 10 && product.stockQuantity < 20"
+                  [class.success]="product.stockQuantity >= 20">
+                  {{ product.stockQuantity }}
+                </span>
+                <button 
+                  class="btn-stock" 
+                  (click)="updateStock(product, -1)"
+                  [disabled]="product.stockQuantity <= 0 || updatingStock === product.id"
+                  type="button">−</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card-actions">
+            <a [routerLink]="['/products/edit', product.id]" class="btn btn-secondary btn-block">Editar</a>
+            <button class="btn btn-danger btn-block" (click)="confirmDelete(product)" type="button">Excluir</button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Desktop: Table -->
+    <div class="product-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products; track product.id) {
+            <tr>
+              <td><strong>{{ product.name }}</strong></td>
+              <td class="text-muted">{{ product.description || '-' }}</td>
+              <td>{{ product.price | currency:'BRL' }}</td>
+              <td>
+                <div class="stock-control">
+                  <button 
+                    class="btn btn-icon btn-secondary" 
+                    (click)="updateStock(product, -1)"
+                    [disabled]="product.stockQuantity <= 0 || updatingStock === product.id"
+                    type="button">−</button>
+                  <span 
+                    class="stock-value badge" 
+                    [class.badge-danger]="product.stockQuantity < 10"
+                    [class.badge-warning]="product.stockQuantity >= 10 && product.stockQuantity < 20"
+                    [class.badge-success]="product.stockQuantity >= 20">
+                    {{ product.stockQuantity }}
+                  </span>
+                  <button 
+                    class="btn btn-icon btn-secondary" 
+                    (click)="updateStock(product, 1)"
+                    [disabled]="updatingStock === product.id"
+                    type="button">+</button>
+                </div>
+              </td>
+              <td>
+                <div class="actions">
+                  <a [routerLink]="['/products/edit', product.id]" class="btn btn-sm btn-secondary">Editar</a>
+                  <button class="btn btn-sm btn-danger" (click)="confirmDelete(product)" type="button">Excluir</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="page-footer">
+      <span class="text-muted">{{ totalElements }} produtos</span>
+      <div class="pagination">
+        <button 
+          class="btn btn-sm btn-secondary" 
+          [disabled]="page === 0" 
+          (click)="changePage(page - 1)"
+          type="button">←</button>
+        <span>{{ page + 1 }}/{{ totalPages || 1 }}</span>
+        <button 
+          class="btn btn-sm btn-secondary" 
+          [disabled]="page >= totalPages - 1" 
+          (click)="changePage(page + 1)"
+          type="button">→</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if (showDeleteModal && productToDelete) {
+  <div class="modal-overlay" (click)="cancelDelete()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Confirmar exclusão</h3>
+      <p>Excluir <strong>{{ productToDelete.name }}</strong>?</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="cancelDelete()" type="button">Cancelar</button>
+        <button class="btn btn-danger" (click)="deleteConfirmed()" type="button">Excluir</button>
+      </div>
+    </div>
+  </div>
+}

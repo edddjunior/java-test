@@ -1,0 +1,225 @@
+{
+  "info": {
+    "name": "Inventory System API",
+    "description": "Collection completa para testar os microserviços do Sistema de Estoque",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "productServiceUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "stockServiceUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "productId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Product Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{productServiceUrl}}/actuator/health",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Listar Produtos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products?page=0&size=10",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar Produto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('productId', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto Teste\",\n  \"description\": \"Descrição do produto de teste\",\n  \"price\": 99.90,\n  \"stockQuantity\": 100\n}"
+            },
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Produto por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products/{{productId}}",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Produto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Produto Atualizado\",\n  \"description\": \"Descrição atualizada\",\n  \"price\": 149.90,\n  \"stockQuantity\": 75\n}"
+            },
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products/{{productId}}",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Produto (Soft Delete)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products/{{productId}}",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Produto Inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products/00000000-0000-0000-0000-000000000000",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products", "00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        },
+        {
+          "name": "Criar Produto - Validação Erro (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"price\": -10,\n  \"stockQuantity\": -5\n}"
+            },
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "UUID Inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{productServiceUrl}}/api/v1/products/invalid-uuid",
+              "host": ["{{productServiceUrl}}"],
+              "path": ["api", "v1", "products", "invalid-uuid"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock Service",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stockServiceUrl}}/actuator/health",
+              "host": ["{{stockServiceUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Consultar Estoque",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stockServiceUrl}}/api/v1/stock/{{productId}}",
+              "host": ["{{stockServiceUrl}}"],
+              "path": ["api", "v1", "stock", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Consultar Estoque - Produto Inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stockServiceUrl}}/api/v1/stock/00000000-0000-0000-0000-000000000000",
+              "host": ["{{stockServiceUrl}}"],
+              "path": ["api", "v1", "stock", "00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        },
+        {
+          "name": "Consultar Estoque - UUID Inválido (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{stockServiceUrl}}/api/v1/stock/invalid-uuid",
+              "host": ["{{stockServiceUrl}}"],
+              "path": ["api", "v1", "stock", "invalid-uuid"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

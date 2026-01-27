@@ -1,0 +1,48 @@
+<div class="card">
+  <h2>Consulta de Estoque</h2>
+  <p class="text-muted subtitle">Selecione um produto para verificar o estoque via Serviço B</p>
+
+  <div class="form-group">
+    <label for="product">Produto</label>
+    <select id="product" [(ngModel)]="selectedProductId" (change)="checkStock()">
+      <option value="">Selecione um produto...</option>
+      @for (product of products; track product.id) {
+        <option [value]="product.id">{{ product.name }}</option>
+      }
+    </select>
+  </div>
+
+  @if (loadingProducts) {
+    <div class="loading">
+      <div class="spinner"></div>
+    </div>
+  }
+
+  @if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <div class="loading">
+      <div class="spinner"></div>
+    </div>
+  }
+
+  @if (stock) {
+    <div class="stock-result" [class.low-stock]="stock.quantity < 10">
+      <div class="stock-header">
+        <h3>{{ stock.productName }}</h3>
+        @if (stock.quantity < 10) {
+          <span class="badge badge-danger">Estoque Baixo</span>
+        } @else {
+          <span class="badge badge-success">Estoque OK</span>
+        }
+      </div>
+      
+      <div class="stock-quantity">
+        <span class="number">{{ stock.quantity }}</span>
+        <span class="label">unidades em estoque</span>
+      </div>
+    </div>
+  }
+</div>

@@ -20,7 +20,7 @@ services:
 
   product-service:
     build:
-      context: ./product-service
+      context: ./backend/product-service
       dockerfile: Dockerfile
     container_name: inventory-product-service
     ports:
@@ -44,7 +44,7 @@ services:
 
   stock-service:
     build:
-      context: ./stock-service
+      context: ./backend/stock-service
       dockerfile: Dockerfile
     container_name: inventory-stock-service
     ports:
@@ -61,6 +61,19 @@ services:
       timeout: 10s
       start_period: 60s
       retries: 3
+    networks:
+      - inventory-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: inventory-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - product-service
+      - stock-service
     networks:
       - inventory-network
 

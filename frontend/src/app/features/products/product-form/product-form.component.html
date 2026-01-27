@@ -1,0 +1,90 @@
+<div class="card">
+  <div class="page-header">
+    <h2>{{ isEdit ? 'Editar Produto' : 'Novo Produto' }}</h2>
+    <a routerLink="/products" class="btn btn-secondary">← Voltar</a>
+  </div>
+
+  @if (error) {
+    <div class="alert alert-danger">{{ error }}</div>
+  }
+
+  @if (loadingProduct) {
+    <div class="loading">
+      <div class="spinner"></div>
+    </div>
+  } @else {
+    <form (ngSubmit)="save()" #productForm="ngForm">
+      <div class="form-group">
+        <label for="name">Nome *</label>
+        <input 
+          id="name" 
+          [(ngModel)]="product.name" 
+          name="name" 
+          required 
+          maxlength="255"
+          placeholder="Ex: Notebook Dell XPS"
+          #nameInput="ngModel">
+        @if (nameInput.invalid && nameInput.touched) {
+          <small class="form-error">Nome é obrigatório</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="description">Descrição</label>
+        <input 
+          id="description" 
+          [(ngModel)]="product.description" 
+          name="description" 
+          maxlength="1000"
+          placeholder="Descrição do produto (opcional)">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="price">Preço (R$) *</label>
+          <input 
+            id="price" 
+            type="number" 
+            [(ngModel)]="product.price" 
+            name="price" 
+            required 
+            min="0.01" 
+            step="0.01"
+            placeholder="0,00"
+            #priceInput="ngModel">
+          @if (priceInput.invalid && priceInput.touched) {
+            <small class="form-error">Preço deve ser maior que zero</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="stockQuantity">Quantidade em Estoque *</label>
+          <input 
+            id="stockQuantity" 
+            type="number" 
+            [(ngModel)]="product.stockQuantity" 
+            name="stockQuantity" 
+            required 
+            min="0"
+            placeholder="0"
+            #stockInput="ngModel">
+          @if (stockInput.invalid && stockInput.touched) {
+            <small class="form-error">Quantidade deve ser zero ou maior</small>
+          }
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="saving || productForm.invalid">
+          @if (saving) {
+            <span class="btn-spinner"></span>
+            Salvando...
+          } @else {
+            {{ isEdit ? 'Salvar Alterações' : 'Cadastrar Produto' }}
+          }
+        </button>
+        <a routerLink="/products" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  }
+</div>
