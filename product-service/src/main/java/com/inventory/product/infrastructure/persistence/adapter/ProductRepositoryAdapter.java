@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,19 +36,12 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAll() {
-        return jpaRepository.findAllByActiveTrue().stream().map(this::toDomain).toList();
-    }
-
-    @Override
     public PageResult<Product> findAll(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ProductEntity> entityPage = jpaRepository.findAllByActiveTrue(pageRequest);
 
-        List<Product> products = entityPage.getContent().stream().map(this::toDomain).toList();
-
         return new PageResult<>(
-                products,
+                entityPage.getContent().stream().map(this::toDomain).toList(),
                 entityPage.getNumber(),
                 entityPage.getSize(),
                 entityPage.getTotalElements(),
@@ -60,7 +53,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
     public void deleteById(UUID id) {
         jpaRepository.findById(id).ifPresent(entity -> {
             entity.setActive(false);
-            entity.setUpdatedAt(java.time.Instant.now());
+            entity.setUpdatedAt(Instant.now());
             jpaRepository.save(entity);
         });
     }

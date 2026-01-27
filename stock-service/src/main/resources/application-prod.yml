@@ -1,5 +1,5 @@
 product-service:
-  url: ${PRODUCT_SERVICE_URL:http://product-service:8080}
+  url: ${PRODUCT_SERVICE_URL:http://localhost:8080}
 
 logging:
   level:

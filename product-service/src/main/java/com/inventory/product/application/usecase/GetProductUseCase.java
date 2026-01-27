@@ -5,6 +5,7 @@ import com.inventory.product.application.mapper.ProductMapper;
 import com.inventory.product.domain.exception.ProductNotFoundException;
 import com.inventory.product.domain.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ public class GetProductUseCase {
         this.productMapper = productMapper;
     }
 
+    @Transactional(readOnly = true)
     public ProductDTO execute(UUID id) {
         return productRepository.findById(id)
                 .map(productMapper::toDTO)

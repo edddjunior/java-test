@@ -3,22 +3,27 @@ package com.inventory.product.infrastructure.persistence.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+    @Index(name = "idx_products_active", columnList = "active"),
+    @Index(name = "idx_products_created_at", columnList = "created_at")
+})
 public class ProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
     @Column(name = "stock_quantity", nullable = false)
@@ -27,7 +32,7 @@ public class ProductEntity {
     @Column(nullable = false)
     private boolean active = true;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at", nullable = false)
@@ -36,7 +41,7 @@ public class ProductEntity {
     @Version
     private Long version;
 
-    public ProductEntity() {}
+    protected ProductEntity() {}
 
     public ProductEntity(UUID id, String name, String description, BigDecimal price,
                          Integer stockQuantity, boolean active, Instant createdAt, Instant updatedAt, Long version) {
@@ -52,21 +57,28 @@ public class ProductEntity {
     }
 
     public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
     public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
     public Integer getStockQuantity() { return stockQuantity; }
-    public void setStockQuantity(Integer stockQuantity) { this.stockQuantity = stockQuantity; }
     public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
     public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
     public Long getVersion() { return version; }
-    public void setVersion(Long version) { this.version = version; }
+
+    public void setActive(boolean active) { this.active = active; }
+    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductEntity that = (ProductEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

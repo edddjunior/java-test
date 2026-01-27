@@ -1,6 +1,8 @@
 package com.inventory.stock.infrastructure.client;
 
+import com.inventory.stock.domain.exception.ServiceUnavailableException;
 import com.inventory.stock.domain.gateway.ProductGateway;
+import com.inventory.stock.domain.model.ProductStock;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
@@ -32,13 +34,14 @@ public class ProductClientAdapter implements ProductGateway {
             }
             return Optional.empty();
         } catch (FeignException.NotFound e) {
-            log.warn("Produto não encontrado: {}", productId);
+            log.debug("Produto não encontrado: {}", productId);
             return Optional.empty();
         }
     }
 
+    @SuppressWarnings("unused")
     private Optional<ProductStock> fallback(UUID productId, Throwable t) {
         log.error("Circuit breaker ativado para produto {}: {}", productId, t.getMessage());
-        return Optional.empty();
+        throw new ServiceUnavailableException("Serviço de produtos indisponível");
     }
 }

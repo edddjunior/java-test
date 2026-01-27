@@ -5,6 +5,7 @@ import com.inventory.product.application.mapper.ProductMapper;
 import com.inventory.product.domain.model.Product;
 import com.inventory.product.domain.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -19,6 +20,7 @@ public class CreateProductUseCase {
         this.productMapper = productMapper;
     }
 
+    @Transactional
     public ProductDTO execute(String name, String description, BigDecimal price, Integer stockQuantity) {
         Product product = Product.create(name, description, price, stockQuantity);
         Product saved = productRepository.save(product);

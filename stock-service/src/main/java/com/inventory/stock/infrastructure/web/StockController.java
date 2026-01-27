@@ -1,7 +1,7 @@
 package com.inventory.stock.infrastructure.web;
 
+import com.inventory.stock.application.dto.StockDTO;
 import com.inventory.stock.application.usecase.CheckStockUseCase;
-import com.inventory.stock.application.usecase.CheckStockUseCase.StockCheckResult;
 import com.inventory.stock.domain.exception.ProductNotFoundException;
 import com.inventory.stock.infrastructure.web.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/stock")
+@RequestMapping("/api/v1/stock")
 @Tag(name = "Stock", description = "Consulta de estoque")
 public class StockController {
 
@@ -22,8 +22,8 @@ public class StockController {
     }
 
     @GetMapping("/{productId}")
-    @Operation(summary = "Verifica estoque de um produto")
-    public ApiResponse<StockCheckResult> checkStock(@PathVariable UUID productId) {
+    @Operation(summary = "Consulta estoque de um produto")
+    public ApiResponse<StockDTO> checkStock(@PathVariable UUID productId) {
         return checkStockUseCase.execute(productId)
                 .map(ApiResponse::of)
                 .orElseThrow(() -> new ProductNotFoundException(productId));

@@ -1,5 +1,7 @@
 package com.inventory.stock.application.usecase;
 
+import com.inventory.stock.application.dto.StockDTO;
+import com.inventory.stock.application.mapper.StockMapper;
 import com.inventory.stock.domain.gateway.ProductGateway;
 import org.springframework.stereotype.Service;
 
@@ -9,23 +11,16 @@ import java.util.UUID;
 @Service
 public class CheckStockUseCase {
 
-    private static final int LOW_STOCK_THRESHOLD = 10;
-
     private final ProductGateway productGateway;
+    private final StockMapper stockMapper;
 
-    public CheckStockUseCase(ProductGateway productGateway) {
+    public CheckStockUseCase(ProductGateway productGateway, StockMapper stockMapper) {
         this.productGateway = productGateway;
+        this.stockMapper = stockMapper;
     }
 
-    public Optional<StockCheckResult> execute(UUID productId) {
+    public Optional<StockDTO> execute(UUID productId) {
         return productGateway.getProduct(productId)
-                .map(product -> new StockCheckResult(
-                        product.id(),
-                        product.name(),
-                        product.stockQuantity(),
-                        product.stockQuantity() < LOW_STOCK_THRESHOLD
-                ));
+                .map(stockMapper::toDTO);
     }
-
-    public record StockCheckResult(UUID productId, String productName, Integer stockQuantity, boolean lowStock) {}
 }

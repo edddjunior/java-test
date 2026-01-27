@@ -57,7 +57,7 @@ public class Product {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Nome do produto é obrigatório");
         }
-        if (name.length() > 255) {
+        if (name.trim().length() > 255) {
             throw new IllegalArgumentException("Nome não pode exceder 255 caracteres");
         }
     }
@@ -66,8 +66,8 @@ public class Product {
         if (price == null) {
             throw new IllegalArgumentException("Preço é obrigatório");
         }
-        if (price.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Preço não pode ser negativo");
+        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Preço deve ser maior que zero");
         }
     }
 

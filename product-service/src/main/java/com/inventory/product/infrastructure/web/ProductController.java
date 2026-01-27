@@ -1,8 +1,8 @@
 package com.inventory.product.infrastructure.web;
 
+import com.inventory.product.application.dto.PageDTO;
 import com.inventory.product.application.dto.ProductDTO;
 import com.inventory.product.application.usecase.*;
-import com.inventory.product.domain.model.PageResult;
 import com.inventory.product.infrastructure.web.request.CreateProductRequest;
 import com.inventory.product.infrastructure.web.request.UpdateProductRequest;
 import com.inventory.product.infrastructure.web.response.ApiResponse;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
 @Tag(name = "Products", description = "Gerenciamento de produtos")
 public class ProductController {
 
@@ -42,7 +42,7 @@ public class ProductController {
 
     @GetMapping
     @Operation(summary = "Lista produtos com paginação")
-    public ApiResponse<PageResult<ProductDTO>> findAll(
+    public ApiResponse<PageDTO<ProductDTO>> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {

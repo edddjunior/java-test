@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: inventory-postgres
     environment:
       POSTGRES_DB: products_db
       POSTGRES_USER: postgres
@@ -10,31 +11,62 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d products_db"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - inventory-network
 
   product-service:
-    build: ./product-service
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    container_name: inventory-product-service
     ports:
       - "8080:8080"
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/products_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - inventory-network
 
   stock-service:
-    build: ./stock-service
+    build:
+      context: ./stock-service
+      dockerfile: Dockerfile
+    container_name: inventory-stock-service
     ports:
       - "8081:8081"
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       PRODUCT_SERVICE_URL: http://product-service:8080
     depends_on:
-      - product-service
+      product-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    networks:
+      - inventory-network
+
+networks:
+  inventory-network:
+    driver: bridge
 
 volumes:
   postgres_data:

@@ -6,6 +6,7 @@ import com.inventory.product.domain.exception.ProductNotFoundException;
 import com.inventory.product.domain.model.Product;
 import com.inventory.product.domain.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -21,6 +22,7 @@ public class UpdateProductUseCase {
         this.productMapper = productMapper;
     }
 
+    @Transactional
     public ProductDTO execute(UUID id, String name, String description, BigDecimal price, Integer stockQuantity) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));

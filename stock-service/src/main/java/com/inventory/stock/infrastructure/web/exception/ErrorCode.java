@@ -6,6 +6,7 @@ public enum ErrorCode {
 
     // 4xx - Client Errors
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "Produto não encontrado"),
+    VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "Erro de validação"),
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "Argumento inválido"),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "Tipo incompatível"),
 
