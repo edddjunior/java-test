@@ -5,41 +5,51 @@ import com.inventory.stock.infrastructure.web.response.ApiErrorResponse;
 import feign.FeignException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleProductNotFound(ProductNotFoundException ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiErrorResponse.of("PRODUCT_NOT_FOUND", ex.getMessage(), req.getRequestURI()));
+    public ResponseEntity<ApiErrorResponse> handle(ProductNotFoundException ex, HttpServletRequest req) {
+        return response(ErrorCode.PRODUCT_NOT_FOUND, ex.getMessage(), req);
     }
 
     @ExceptionHandler(FeignException.class)
-    public ResponseEntity<ApiErrorResponse> handleFeign(FeignException ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(ApiErrorResponse.of("PRODUCT_SERVICE_UNAVAILABLE", "Serviço de produtos indisponível", req.getRequestURI()));
+    public ResponseEntity<ApiErrorResponse> handle(FeignException ex, HttpServletRequest req) {
+        return response(ErrorCode.PRODUCT_SERVICE_UNAVAILABLE, req);
     }
 
     @ExceptionHandler(CallNotPermittedException.class)
-    public ResponseEntity<ApiErrorResponse> handleCircuitBreaker(CallNotPermittedException ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(ApiErrorResponse.of("SERVICE_UNAVAILABLE", "Serviço temporariamente indisponível", req.getRequestURI()));
+    public ResponseEntity<ApiErrorResponse> handle(CallNotPermittedException ex, HttpServletRequest req) {
+        return response(ErrorCode.SERVICE_UNAVAILABLE, "Serviço temporariamente indisponível. Tente novamente.", req);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiErrorResponse> handle(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        String message = "Parâmetro '" + ex.getName() + "' possui valor inválido: " + ex.getValue();
+        return response(ErrorCode.TYPE_MISMATCH, message, req);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiErrorResponse.of("BAD_REQUEST", ex.getMessage(), req.getRequestURI()));
+    public ResponseEntity<ApiErrorResponse> handle(IllegalArgumentException ex, HttpServletRequest req) {
+        return response(ErrorCode.INVALID_ARGUMENT, ex.getMessage(), req);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGeneric(Exception ex, HttpServletRequest req) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiErrorResponse.of("INTERNAL_ERROR", "Erro interno do servidor", req.getRequestURI()));
+    public ResponseEntity<ApiErrorResponse> handle(Exception ex, HttpServletRequest req) {
+        return response(ErrorCode.INTERNAL_ERROR, req);
+    }
+
+    private ResponseEntity<ApiErrorResponse> response(ErrorCode code, HttpServletRequest req) {
+        return response(code, code.getDefaultMessage(), req);
+    }
+
+    private ResponseEntity<ApiErrorResponse> response(ErrorCode code, String message, HttpServletRequest req) {
+        return ResponseEntity.status(code.getStatus())
+                .body(ApiErrorResponse.of(code.name(), message, req.getRequestURI()));
     }
 }
