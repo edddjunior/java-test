@@ -3,14 +3,16 @@ package com.inventory.product.infrastructure.web;
 import com.inventory.product.application.dto.ProductDTO;
 import com.inventory.product.application.usecase.*;
 import com.inventory.product.domain.model.PageResult;
+import com.inventory.product.infrastructure.web.request.CreateProductRequest;
+import com.inventory.product.infrastructure.web.request.UpdateProductRequest;
 import com.inventory.product.infrastructure.web.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
@@ -55,7 +57,7 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "Cria novo produto")
-    public ResponseEntity<ApiResponse<ProductDTO>> create(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<ApiResponse<ProductDTO>> create(@Valid @RequestBody CreateProductRequest request) {
         ProductDTO dto = createProductUseCase.execute(
                 request.name(),
                 request.description(),
@@ -67,7 +69,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualiza produto existente")
-    public ApiResponse<ProductDTO> update(@PathVariable UUID id, @RequestBody UpdateProductRequest request) {
+    public ApiResponse<ProductDTO> update(@PathVariable UUID id, @Valid @RequestBody UpdateProductRequest request) {
         ProductDTO dto = updateProductUseCase.execute(
                 id,
                 request.name(),
@@ -84,7 +86,4 @@ public class ProductController {
     public void delete(@PathVariable UUID id) {
         deleteProductUseCase.execute(id);
     }
-
-    record CreateProductRequest(String name, String description, BigDecimal price, Integer stockQuantity) {}
-    record UpdateProductRequest(String name, String description, BigDecimal price, Integer stockQuantity) {}
 }
