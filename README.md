@@ -56,6 +56,8 @@ make status
 make health
 ```
 
+> **Nota:** As migrations do Flyway e os dados iniciais (seed) são executados automaticamente ao iniciar o serviço. Não é necessário rodar nenhum comando manual.
+
 ## Comandos Make
 
 ```bash
@@ -120,13 +122,13 @@ echo ""
 docker compose stop product-service
 
 # Consultar estoque (Circuit Breaker ativa)
-curl -s http://localhost:8081/api/v1/stock/867de4e9-db92-44e6-ba29-ec58b60ef9ab | jq
+curl -s http://localhost:8081/api/v1/stock/a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d | jq
 # Retorna: SERVICE_UNAVAILABLE
 
 # Reiniciar e aguardar recuperação
 docker compose start product-service
 sleep 20
-curl -s http://localhost:8081/api/v1/stock/867de4e9-db92-44e6-ba29-ec58b60ef9ab | jq
+curl -s http://localhost:8081/api/v1/stock/a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d | jq
 # Retorna: dados do produto
 ```
 
