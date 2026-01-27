@@ -2,6 +2,7 @@ package com.inventory.product.infrastructure.web;
 
 import com.inventory.product.application.usecase.*;
 import com.inventory.product.domain.model.Product;
+import com.inventory.product.infrastructure.web.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,35 +36,36 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> findAll() {
-        return listProductsUseCase.execute();
+    public ApiResponse<List<Product>> findAll() {
+        return ApiResponse.of(listProductsUseCase.execute());
     }
 
     @GetMapping("/{id}")
-    public Product findById(@PathVariable UUID id) {
-        return getProductUseCase.execute(id);
+    public ApiResponse<Product> findById(@PathVariable UUID id) {
+        return ApiResponse.of(getProductUseCase.execute(id));
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public Product create(@RequestBody CreateProductRequest request) {
-        return createProductUseCase.execute(
+    public ResponseEntity<ApiResponse<Product>> create(@RequestBody CreateProductRequest request) {
+        Product product = createProductUseCase.execute(
                 request.name(),
                 request.description(),
                 request.price(),
                 request.stockQuantity()
         );
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(product));
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable UUID id, @RequestBody UpdateProductRequest request) {
-        return updateProductUseCase.execute(
+    public ApiResponse<Product> update(@PathVariable UUID id, @RequestBody UpdateProductRequest request) {
+        Product product = updateProductUseCase.execute(
                 id,
                 request.name(),
                 request.description(),
                 request.price(),
                 request.stockQuantity()
         );
+        return ApiResponse.of(product);
     }
 
     @DeleteMapping("/{id}")
