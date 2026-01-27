@@ -5,6 +5,8 @@ import com.inventory.product.application.mapper.ProductMapper;
 import com.inventory.product.domain.exception.ProductNotFoundException;
 import com.inventory.product.domain.model.Product;
 import com.inventory.product.domain.repository.ProductRepository;
+import com.inventory.product.infrastructure.config.CacheConfig;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class UpdateProductUseCase {
         this.productMapper = productMapper;
     }
 
+    @CachePut(value = CacheConfig.PRODUCTS_CACHE, key = "#id")
     @Transactional
     public ProductDTO execute(UUID id, String name, String description, BigDecimal price, Integer stockQuantity) {
         Product product = productRepository.findById(id)
