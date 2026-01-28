@@ -34,9 +34,9 @@ Sistema de gerenciamento de estoque construído com arquitetura de microserviço
 | Feature | Descrição |
 |---------|-----------|
 | **Hexagonal Architecture** | Separação clara entre domain, application e infrastructure |
-| **Cache (Caffeine)** | Cache em memória no Product Service (TTL: 5min) |
+| **Cache (Caffeine)** | Cache em memória no Product Service (TTL: 60s) |
 | **Circuit Breaker** | Resilience4j no Stock Service para falhas do Product Service |
-| **Rate Limiter** | 100 req/s por serviço |
+| **Rate Limiter** | 10 req/s por serviço |
 | **Optimistic Locking** | Controle de concorrência com `@Version` |
 | **Soft Delete** | Produtos não são removidos fisicamente |
 | **Paginação** | Listagem paginada de produtos |
@@ -104,15 +104,16 @@ time curl -s http://localhost:8080/api/v1/products | head -c 100
 curl -s http://localhost:8080/actuator/caches | jq
 ```
 
-### 2. Rate Limiter (100 req/s)
+### 2. Rate Limiter (10 req/s)
 
 ```bash
-# Enviar 150 requisições rapidamente
-for i in {1..150}; do
+# Enviar 20 requisições rapidamente
+for i in {1..20}; do
   curl -s -o /dev/null -w "%{http_code} " http://localhost:8080/api/v1/products
 done
 echo ""
-# Algumas retornarão 429 (Too Many Requests)
+# Resultado esperado: 200 200 200 200 200 200 200 200 200 200 429 429 429 429 429 429 429 429 429 429
+# As primeiras 10 retornam 200, as demais 429 (Too Many Requests)
 ```
 
 ### 3. Circuit Breaker
