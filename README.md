@@ -136,18 +136,18 @@ curl -s http://localhost:8081/api/v1/stock/a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d 
 ### 4. Optimistic Locking
 
 ```bash
-# Buscar produto e obter versão
-PRODUCT=$(curl -s http://localhost:8080/api/v1/products | jq -r '.data.content[0]')
-ID=$(echo $PRODUCT | jq -r '.id')
-echo "Produto: $ID"
+# Dispara duas atualizações simultâneas no mesmo produto
+ID=$(curl -s http://localhost:8080/api/v1/products | jq -r '.data.content[0].id'); \
+echo "ID: $ID"; \
+curl -s -X PUT "http://localhost:8080/api/v1/products/$ID" -H "Content-Type: application/json" \
+  -d '{"name":"Update A","description":"Desc","price":100,"stockQuantity":10}' & \
+curl -s -X PUT "http://localhost:8080/api/v1/products/$ID" -H "Content-Type: application/json" \
+  -d '{"name":"Update B","description":"Desc","price":200,"stockQuantity":20}' & \
+wait
 
-# Terminal 1: Atualizar produto
-curl -s -X PUT "http://localhost:8080/api/v1/products/$ID" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Update 1","description":"Desc","price":100,"stockQuantity":10}' | jq
-
-# Terminal 2: Tentar atualizar simultaneamente (conflito)
-# Se a versão mudou, retorna 409 CONFLICT
+# Resultado esperado:
+# - Uma requisição retorna 200 (sucesso)
+# - A outra retorna 409 CONFLICT com {"code":"CONCURRENT_MODIFICATION",...}
 ```
 
 ### 5. Validação de Erros
