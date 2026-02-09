@@ -76,6 +76,13 @@ test-frontend: ## Roda lint e build do frontend
 	@cd frontend && npm run build
 	@echo "$(GREEN)Frontend OK!$(RESET)"
 
+sonar-frontend: ## Roda análise Sonar no frontend (requer Docker)
+	@echo "$(CYAN)Iniciando análise Sonar para o frontend...$(RESET)"
+	@docker run --rm \
+		-e SONAR_HOST_URL="http://189.57.92.37:47920" \
+		-v "$(PWD)/frontend:/usr/src" \
+		sonarsource/sonar-scanner-cli
+
 install: ## Instala dependências do frontend
 	@echo "$(CYAN)Instalando dependências do frontend...$(RESET)"
 	@cd frontend && npm install
